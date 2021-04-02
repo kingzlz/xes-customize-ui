@@ -15,6 +15,7 @@ module.exports = {
       .end()
       .use('babel')
       .loader('babel-loader')
+      .loader('url-loader')
       .tap(options => {
         return options
       })
