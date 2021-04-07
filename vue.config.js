@@ -19,5 +19,6 @@ module.exports = {
       .tap(options => {
         return options
       })
-  }
+  },
+  productionSourceMap: false
 }
