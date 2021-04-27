@@ -167,10 +167,11 @@ export default {
       transform: {
         scale: 1,
         deg: 0,
-        offsetX: 0,
-        offsetY: 0,
+        offsetX: null,
+        offsetY: null,
         enableTransition: false,
       },
+
     }
   },
   computed: {
@@ -207,8 +208,8 @@ export default {
       const style = {
         transform: `scale(${scale}) rotate(${deg}deg)`,
         transition: enableTransition ? 'transform .3s' : '',
-        'margin-left': `${offsetX}px`,
-        'margin-top': `${offsetY}px`,
+        'left': `${offsetX}px`,
+        'top': `${offsetY}px`,
       }
       if (this.mode === Mode.CONTAIN) {
         style.maxWidth = style.maxHeight = '100%'
@@ -318,7 +319,14 @@ export default {
       this._keyDownHandler = null
       this._mouseWheelHandler = null
     },
-    handleImgLoad(e) {
+    handleImgLoad() {
+      this.transform.offsetX = null;
+      this.transform.offsetY = null;
+      const rect = this.$refs.img.getBoundingClientRect()
+      const { width, height } = rect
+      const { innerWidth, innerHeight } = window
+      this.transform.offsetX = (innerWidth - width) / 2
+      this.transform.offsetY = (innerHeight - height) / 2
       this.loading = false
     },
     handleImgError(e) {
@@ -327,25 +335,29 @@ export default {
     },
     handleMouseDown(e) {
       if (this.loading || e.button !== 0) return
-      const { offsetX, offsetY } = this.transform
-      const startX = e.pageX
-      const startY = e.pageY
-      this._dragHandler = rafThrottle((ev) => {
-        this.transform.offsetX = offsetX + ev.pageX - startX
-        this.transform.offsetY = offsetY + ev.pageY - startY
-      })
-      on(document, 'mousemove', this._dragHandler)
-      on(document, 'mouseup', (ev) => {
-        off(document, 'mousemove', this._dragHandler)
-      })
+      e.stopPropagation()
       e.preventDefault()
+      const { offsetX, offsetY } = this.transform
+      const startX = e.clientX
+      const startY = e.clientY
+      this._dragHandler = rafThrottle((ev) => {
+        this.transform.offsetX = Number(offsetX) + ev.clientX - startX
+        this.transform.offsetY = Number(offsetY) + ev.clientY - startY
+      })
+      const up = () => {
+        off(document, 'mouseup', up)
+        off(document, 'mousemove', this._dragHandler)
+      }
+      on(document, 'mousemove', this._dragHandler)
+      on(document, 'mouseup', up)
+
     },
     reset() {
       this.transform = {
         scale: 1,
         deg: 0,
-        offsetX: 0,
-        offsetY: 0,
+        offsetX: null,
+        offsetY: null,
         enableTransition: false,
       }
     },
@@ -420,6 +432,8 @@ export default {
   }
   &__img {
     cursor: move;
+    position: absolute;
+    user-select: none;
   }
   &__mask {
     position: absolute;
@@ -571,6 +585,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
   }
 }
 @keyframes rotate {
