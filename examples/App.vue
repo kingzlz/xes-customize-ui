@@ -75,6 +75,7 @@
     <br>
      <vd-button type="success" @click="showViewer = true"> 图片查看器 </vd-button>
     <xes-image-viewer v-model="showViewer" :current-image-index="imageIndex" :show-pre-next-bar="true" :close-on-press-escape="false" :img-list="imgList"/>
+    <go-top></go-top>
   </div>
 </template>
 

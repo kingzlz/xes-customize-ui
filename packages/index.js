@@ -4,6 +4,7 @@ import vdInput from './vdInput'
 import vdProgress from './vdProgress'
 import vdLink from './vdLink'
 import xesImageViewer from './xes-image-viewer'
+import goTop from './goTop'
 import '../common/style/index.scss'
 
 const components = [
@@ -12,7 +13,7 @@ const components = [
     vdInput,
     vdProgress,
     vdLink,
-    xesImageViewer
+    goTop
 ]
 
 // 全局注册
@@ -44,5 +45,6 @@ export {
     vdInput,
     vdProgress,
     vdLink,
-    xesImageViewer
+    xesImageViewer,
+    goTop
 }
